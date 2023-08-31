@@ -13,6 +13,9 @@ function dijkstra(graph, start, end) {
     // Crear un objeto para almacenar los nodos visitados
     let visited = {};
 
+    // Crear un objeto para almacenar los nodos previos en el camino más corto
+    let previousNodes = {};
+
     // Mientras haya nodos no visitados
     while (Object.keys(visited).length < Object.keys(graph).length) {
         // Encontrar el nodo no visitado con la distancia más corta desde el nodo de inicio
@@ -33,13 +36,24 @@ function dijkstra(graph, start, end) {
             let newDistance = distances[minNode] + graph[minNode][neighbor];
             if (newDistance < distances[neighbor]) {
                 distances[neighbor] = newDistance;
+                previousNodes[neighbor] = minNode;
             }
         }
     }
 
-    // Devolver la distancia desde el nodo de inicio hasta el nodo de destino
-    return distances[end];
+    // Construir el camino más corto
+    let path = [];
+    let currentNode = end;
+    while (currentNode !== start) {
+        path.unshift(currentNode);
+        currentNode = previousNodes[currentNode];
+    }
+    path.unshift(start);
+
+    // Devolver la distancia más corta y el camino más corto
+    return { distance: distances[end], path: path };
 }
+
 
 function tablaEnrutamient(shortestPath, from, to, message){
     let routingTable = {};
@@ -87,7 +101,7 @@ rl.question("Ingrese el nodo de inicio: ", function(start) {
         shortestPath = dijkstra(graph, start, end);
 
         // Imprimiendo la distancia más corta.
-        console.log("La distancia más corta desde " + start + " hasta " + end + " es: " + shortestPath);
+        console.log("La distancia más corta desde " + start + " hasta " + end + " es: " + shortestPath.distance, shortestPath.path);
 
         // Pidiendo un mensaje.
         rl.question("Ingrese un mensaje: ", function(message) {
