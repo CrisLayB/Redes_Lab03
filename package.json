@@ -1,0 +1,23 @@
+{
+  "name": "redes_lab03",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrisLayB/Redes_Lab03.git"
+  },
+  "author": "Javier Valle, Mario de León, Cristian Laynez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CrisLayB/Redes_Lab03/issues"
+  },
+  "homepage": "https://github.com/CrisLayB/Redes_Lab03#readme",
+  "dependencies": {
+    "@xmpp/client": "^0.13.1",
+    "@xmpp/debug": "^0.13.0"
+  }
+}
