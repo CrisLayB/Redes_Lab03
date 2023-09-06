@@ -1,24 +1,18 @@
 const readline = require("readline");
 
-function dijkstra(graph, start, end) {
-    // Crear un objeto para almacenar las distancias desde el nodo de inicio hasta cada nodo
+function dijkstra(topo, start, end) {
     let distances = {};
-    // Inicializar todas las distancias en infinito
-    for (let node in graph) {
+    for (let node in topo.config) {
         distances[node] = Infinity;
     }
-    // Establecer la distancia desde el nodo de inicio hasta sí mismo en 0
     distances[start] = 0;
 
-    // Crear un objeto para almacenar los nodos visitados
     let visited = {};
-
-    // Crear un objeto para almacenar los nodos previos en el camino más corto
     let previousNodes = {};
 
-    // Mientras haya nodos no visitados
-    while (Object.keys(visited).length < Object.keys(graph).length) {
-        // Encontrar el nodo no visitado con la distancia más corta desde el nodo de inicio
+    let hopCount = 0; // Variable para contar los nodos visitados
+
+    while (Object.keys(visited).length < Object.keys(topo.config).length) {
         let minNode = null;
         for (let node in distances) {
             if (!visited[node]) {
@@ -28,12 +22,11 @@ function dijkstra(graph, start, end) {
             }
         }
 
-        // Marcar el nodo como visitado
         visited[minNode] = true;
+        hopCount++; // Incrementa el contador de nodos visitados
 
-        // Actualizar las distancias a los nodos adyacentes
-        for (let neighbor in graph[minNode]) {
-            let newDistance = distances[minNode] + graph[minNode][neighbor];
+        for (let neighbor of topo.config[minNode]) {
+            let newDistance = distances[minNode] + 1; // Asumiendo distancia 1 entre todos los nodos
             if (newDistance < distances[neighbor]) {
                 distances[neighbor] = newDistance;
                 previousNodes[neighbor] = minNode;
@@ -41,7 +34,6 @@ function dijkstra(graph, start, end) {
         }
     }
 
-    // Construir el camino más corto
     let path = [];
     let currentNode = end;
     while (currentNode !== start) {
@@ -50,10 +42,8 @@ function dijkstra(graph, start, end) {
     }
     path.unshift(start);
 
-    // Devolver la distancia más corta y el camino más corto
-    return { distance: distances[end], path: path };
+    return { distance: distances[end], path: path, hop_count: hopCount }; // Agrega hop_count al resultado
 }
-
 
 function tablaEnrutamient(shortestPath, from, to, message){
     let routingTable = {};
@@ -62,6 +52,7 @@ function tablaEnrutamient(shortestPath, from, to, message){
     routingTable["to"] = to;
     routingTable["message"] = message;
     routingTable["shortestPath"] = shortestPath;
+    routingTable["hop_count"] = shortestPath.hop_count; // Agrega hop_count a la tabla de enrutamiento
 
     return routingTable;
 }
@@ -69,55 +60,35 @@ function tablaEnrutamient(shortestPath, from, to, message){
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-  });
-  
-
-// Grafo a usar de momento:
-let graph = {
-    A: {B: 2, C: 4, E: 3, F: 5, G: 6},
-    B: {A: 2, C: 1, D: 4, F: 2, H: 7},
-    C: {A: 4, B: 1, D: 2, G: 5, I: 8},
-    D: {B: 4, C: 2, H: 3, J: 9},
-    E: {A: 3, F: 1, K: 10},
-    F: {A: 5, B: 2, E: 1, G: 3, L: 11},
-    G: {A: 6, C: 5, F: 3, H: 2, M: 12},
-    H: {B: 7, D: 3, G: 2, N: 13},
-    I: {C: 8, J:14},
-    J:{D :9,I :14,K :15,L :16,M :17,N :18,O :19,P :20},
-    K:{E :10,J :15,Q :21,R :22,S :23,T :24,U :25,V :26,W :27,X :28,Y :29,Z :30},
-    L:{F :11,J :16,Q :31,R :32,S :33,T :34,U :35,V :36,W :37,X :38,Y :39,Z :40},
-    M:{G :12,J :17,Q :41,R :42,S :43,T :44,U :45,V :46,W :47,X :48,Y :49,Z :50}
-};
-
-
-// Imprimiendo el grafo.
-console.log("Grafo: ");
-console.log(graph);
-
-// Pidiendo el nodo de inicio y el nodo de fin.
-rl.question("Ingrese el nodo de inicio: ", function(start) {
-    rl.question("Ingrese el nodo de fin: ", function(end) {
-
-        shortestPath = dijkstra(graph, start, end);
-
-        // Imprimiendo la distancia más corta.
-        console.log("La distancia más corta desde " + start + " hasta " + end + " es: " + shortestPath.distance, shortestPath.path);
-
-        // Pidiendo un mensaje.
-        rl.question("Ingrese un mensaje: ", function(message) {
-            // Imprimiendo el mensaje.
-            console.log("El mensaje es: " + message);
-
-            // Imprimiendo la tabla de enrutamiento.
-            console.log("Tabla de enrutamiento: ");
-            console.log(tablaEnrutamient(shortestPath, start, end, message));
-            rl.close();
-        });
-
-    });
 });
 
-//const distancia = dijkstra(graph, "A", "D")
+let topo = {
+    type: "topo",
+    config: {
+        'A': ['C', 'E', 'F', 'G'],
+        'B': ['F', 'G'],
+        'C': ['A', 'D', 'G'],
+        'D': ['C', 'E', 'G']
+    }
+};
 
-// Imprimiendo la info adecuadamente.
-//console.log("La distancia más corta desde A hasta D es: " + distancia);
+console.log("Topo: ");
+console.log(topo);
+
+rl.question("Ingrese el nodo de inicio: ", function(start) {
+    rl.question("Ingrese el nodo de fin: ", function(end) {
+        rl.question("Ingrese un mensaje: ", function(message) {
+            console.log("El mensaje es: " + message);
+
+            const shortestPath = dijkstra(topo, start, end);
+            console.log("El shortest path es: ");
+            console.log(shortestPath);
+
+            const routingTable = tablaEnrutamient(shortestPath, start, end, message);
+            console.log("La tabla de enrutamiento es: ");
+            console.log(routingTable);
+
+            rl.close();
+        });
+    });
+});
