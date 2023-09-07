@@ -1,4 +1,4 @@
-package flooding;
+package flooding_java;
 
 public class Edge {
     private Node target;

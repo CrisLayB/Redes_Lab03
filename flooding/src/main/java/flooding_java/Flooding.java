@@ -1,4 +1,4 @@
-package flooding;
+package flooding_java;
 
 import java.util.HashMap;
 import java.util.Map;

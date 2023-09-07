@@ -1,4 +1,4 @@
-package flooding;
+package flooding_java;
 
 import java.util.ArrayList;
 import java.util.List;
