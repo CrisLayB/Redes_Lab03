@@ -1,0 +1,12 @@
+{
+  "type": "names",
+  "config": {
+    "A": "yeet@alumchat.xyz",
+    "B": "foo@alumchat.xyz",
+    "C": "bar@alumchat.xyz",
+    "D": "swag@alumchat.xyz",
+    "E": "omg@alumchat.xyz",
+    "F": "lol@alumchat.xyz",
+    "G": "woot@alumchat.xyz"
+  }
+}

@@ -1,4 +1,4 @@
-const readline = require("readline");
+//const readline = require("readline");
 
 function dijkstra(topo, start, end) {
     let distances = {};
@@ -45,50 +45,58 @@ function dijkstra(topo, start, end) {
     return { distance: distances[end], path: path, hop_count: hopCount }; // Agrega hop_count al resultado
 }
 
+
 function tablaEnrutamient(shortestPath, from, to, message){
     let routingTable = {};
 
     routingTable["from"] = from;
     routingTable["to"] = to;
-    routingTable["message"] = message;
+    routingTable["messages"] = message;
     routingTable["shortestPath"] = shortestPath;
     routingTable["hop_count"] = shortestPath.hop_count; // Agrega hop_count a la tabla de enrutamiento
 
     return routingTable;
 }
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
 
-let topo = {
-    type: "topo",
-    config: {
-        'A': ['C', 'E', 'F', 'G'],
-        'B': ['F', 'G'],
-        'C': ['A', 'D', 'G'],
-        'D': ['C', 'E', 'G']
-    }
+module.exports = {
+    dijkstra,
+    tablaEnrutamient
 };
 
-console.log("Topo: ");
-console.log(topo);
+// // Definir los nombres y la topología
+// let names = {
+//     type: "names",
+//     config: {
+//         'A': 'yeet@alumchat.xyz',
+//         'B': 'foo@alumchat.xyz',
+//         'C': 'bar@alumchat.xyz',
+//         'D': 'swag@alumchat.xyz',
+//         'E': 'omg@alumchat.xyz',
+//         'F': 'lol@alumchat.xyz',
+//         'G': 'woot@alumchat.xyz'
+//     }
+// };
 
-rl.question("Ingrese el nodo de inicio: ", function(start) {
-    rl.question("Ingrese el nodo de fin: ", function(end) {
-        rl.question("Ingrese un mensaje: ", function(message) {
-            console.log("El mensaje es: " + message);
+// let topo = {
+//     type: "topo",
+//     config: {
+//         'A': ['B', 'E', 'G'],
+//         'B': ['A', 'C', 'D', 'E', 'G'],
+//         'C': ['B'],
+//         'D': ['B', 'F'],
+//         'E': ['A', 'B', 'F'],
+//         'F': ['D', 'E'],
+//         'G': ['A', 'B']
+//     }
+// };
 
-            const shortestPath = dijkstra(topo, start, end);
-            console.log("El shortest path es: ");
-            console.log(shortestPath);
+// // Ingrese el nodo de inicio y el nodo de fin como nombres
+// let start = 'A'; // Por ejemplo, si quieres calcular desde el nodo 'A'
+// let end = 'D';   // hasta el nodo 'D'
 
-            const routingTable = tablaEnrutamient(shortestPath, start, end, message);
-            console.log("La tabla de enrutamiento es: ");
-            console.log(routingTable);
+// // Calcula Dijkstra
+// const shortestPath = dijkstra(topo, start, end);
 
-            rl.close();
-        });
-    });
-});
+// console.log("El shortest path es: ");
+// console.log(shortestPath);

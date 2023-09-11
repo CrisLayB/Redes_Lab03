@@ -18,6 +18,7 @@
   "homepage": "https://github.com/CrisLayB/Redes_Lab03#readme",
   "dependencies": {
     "@xmpp/client": "^0.13.1",
-    "@xmpp/debug": "^0.13.0"
+    "@xmpp/debug": "^0.13.0",
+    "json5": "^2.2.3"
   }
 }

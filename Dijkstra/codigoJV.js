@@ -1,48 +1,7 @@
 const { client, xml, jid } = require("@xmpp/client");
-//const debug = require("@xmpp/debug");
-const net = require("net");
-const cliente = new net.Socket();
-// const muc = require('node-xmpp-muc');
-
-// Password: 1234
-
 const readline = require("readline");
-//const { invite } = require("simple-xmpp");
-//const { default: messaging } = require("stanza/plugins/messaging");
-
-// const xmpp = client({
-//   service: "xmpp://alumchat.xyz:5222",
-//   domain: "alumchat.xyz",
-//   username: "val20159",
-//   password: "1234",
-// });
-
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-// // debug(xmpp, true);
-
-// xmpp.on("error", (err) => {
-//   console.error(err);
-// });
-
-// xmpp.on("online", async (address) => {
-//   // Makes itself available
-//   await xmpp.send(xml("presence"));
-
-//   // Sends a chat message to "gon20362@alumchat.xyz"
-//   const message = xml(
-//     "message",
-//     { type: "chat", to: "mom20067@alumchat.xyz" },
-//     xml("body", {}, "Hello, this is a message from val20159!"),
-//   );
-
-//   // Log the sent message to avoid an infinite loop of receiving it as well
-//   //console.log("Sending message:", message.toString());
-
-//   await xmpp.send(message);
-// });
-
-// xmpp.start().catch(console.error);
+const { dijkstra, tablaEnrutamient } = require("./dijkstra"); // Importa las funciones de dijkstra
+const fs = require('fs');
 
 // Lector del input.
 const rl = readline.createInterface({
@@ -184,16 +143,35 @@ async function login(username, password) {
       }
 
     });
-
-    // Función para convertir archivo a base64
-    function fileToBase64(filePath) {
-      const fs = require('fs');
-      const fileData = fs.readFileSync(filePath);
-      const base64Data = fileData.toString('base64');
-      return base64Data;
-    }    
       // Llamar a la función para imprimir el último mensaje cada 10 segundos
       //setInterval(printLastMessage, 10000); // 5000 ms = 5 segundos
+
+      async function readDataFromFile(fileName) {
+        return new Promise((resolve, reject) => {
+          fs.readFile(fileName, 'utf8', (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        });
+      }
+
+      function convertirTextoAJSON(texto) {
+        try {
+          // Reemplazar comillas simples por comillas dobles
+          const textoCorregido = texto.replace(/'/g, '"');
+          
+          // Analizar el texto corregido como JSON
+          const objetoJSON = JSON.parse(textoCorregido);
+      
+          return objetoJSON;
+        } catch (error) {
+          console.error('Error al convertir el texto a JSON:', error);
+          return null;
+        }
+      }
       
       // Función para mostrar el menú de opciones
       const opciones = () => {
@@ -205,38 +183,124 @@ async function login(username, password) {
       
       opciones()
 
+      // Creando una interfaz de rl.
+      const rl2 = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+
       rl.question("¿Qué opción deseas?: ", async (answer) => {
         switch (answer) {
           case "1":
-            console.log("Comunicación 1 a 1 con cualquier usuario/contacto...");
-            
-            
-            // Pidiendo el usuario con el que se quiere chatear.
-            rl.question("JID del usuario con el que deseas chatear: ", (userJID) => {
-              const newC = userJID + "@alumchat.xyz";
-              chatWithUser(newC);
+
+            // Creando otra interfaz de lectura para poder leer el input del usuario.
+            const rl2 = readline.createInterface({
+              input: process.stdin,
+              output: process.stdout,
             });
+
+            console.log("Comunicación 1 a 1 con cualquier usuario/contacto...");
+
+            const namesJSON = await readDataFromFile('../names1-x-randomX-2023.txt');
+            const names = JSON.parse(namesJSON);
+
+            console.log("Nombres \n");
+            console.log(names);
+
+            const topoJSON = await readDataFromFile('../topo1-x-randomX-2023.txt');
+            const topo = JSON.parse(topoJSON);
+
+            //console.log("Topología: \n");
+            //console.log(topo);
+
+            // Imprimiendo mi user.
+
+            // Descomentar esto cuando sea el día de la presentación.
+
+            //const usernameAlm = username + "@alumchat.xyz" 
+
+            const usernameAlm = "bar@alumchat.xyz";
+
+            console.log("Username actual: ", usernameAlm);
+
+            // Verificar si el nombre de usuario está en el JSON
+            const keys = Object.keys(names.config);
+
+            if (keys.some(key => names.config[key] === usernameAlm)) {
+                //console.log(`El usuario ${usernameAlm} está presente en el JSON.`);
+
+                // Pedir un nombre de usuario con el que se quiera chatear.
+                rl2.question("¿Con qué usuario desea chatear? ", async (userID) => {
+
+                  var claveIni = "";
+                  
+                  for (const key of keys) {
+                    if (names.config[key] === usernameAlm) {
+                      //console.log(`La clave correspondiente al valor ${newI} es: ${key}`);
+
+                      claveIni = key;
+
+                      break; // Termina el bucle una vez que se encuentra la coincidencia
+                    }
+                  }
+
+                  const newI = userID + "@alumchat.xyz"
+                  //console.log("Usuario con quien chatear: ", newI);
+                  
+                  // Guardando la clave del usuario.
+                  var claveDest = "";
+
+                  for (const key of keys) {
+                    if (names.config[key] === newI) {
+                      //console.log(`La clave correspondiente al valor ${newI} es: ${key}`);
+
+                      claveDest = key;
+
+                      break; // Termina el bucle una vez que se encuentra la coincidencia
+                    }
+                  }
+
+                  //console.log("Clave inicial: ", claveIni, " clave destino: ", claveDest);
+
+                  //console.log("Clave a buscar: ", clave);
+
+                  // Calcula su distancia más corta.
+                  const shortestP = dijkstra(topo, claveIni, claveDest);
+
+                  console.log("Shortest path: ", shortestP);
+
+                  // Chateando con el user.
+                  chatWithUser(userID, shortestP);
+
+                })
+
+
+            } else {
+              console.log(`El usuario ${usernameAlm} NO está presente en el JSON.`);
+            }
+
             
-            async function chatWithUser(userJID) {
+
+            // // Pidiendo el usuario con el que se quiere chatear.
+            // rl2.question("JID del usuario con el que deseas chatear: ", (userJID) => {
+            //   const newC = userJID + "@alumchat.xyz";
+            //   chatWithUser(newC);
+            // });
+            
+            async function chatWithUser(userJID, path) {
               console.log(`Iniciando chat con: ${userJID}`);
+
+              var routingTable = "";
             
               
                 // Función para manejar los mensajes entrantes del usuario
-                function 
-                handleIncomingMessages() {
+                function handleIncomingMessages() {
                   xmpp.on('stanza', async (stanza) => {
                     if (stanza.is('message') && stanza.attrs.type === 'chat') {
                       const from = stanza.attrs.from;
                       const body = stanza.getChildText('body');
                       const subject = stanza.getChildText('subject');
-
-                      // console.log("Recibiendo: ", stanza)
-                      
-                      // console.log("Stanza: ", stanza)
-
-                      // if(subject){
-                      //   console.log("Subject: ", subject)
-                      // }
               
                       if (subject && (subject.includes('Archivo:') || subject.includes('File:'))) {
                         console.log("Archivo recibido");
@@ -283,6 +347,7 @@ async function login(username, password) {
             
               rl.setPrompt('Tú: ');
               rl.prompt();
+              const messages = [];
             
               rl.on('line', async (message) => {
                 if (message.trim() === 'exit') {
@@ -328,6 +393,9 @@ async function login(username, password) {
                   });
                 }
                 else {
+
+
+
                   // Enviando el mensaje al usuario destino
                   const messageToSend = xml(
                     'message',
@@ -335,11 +403,19 @@ async function login(username, password) {
                     xml('body', {}, message),
                   );
                   await xmpp.send(messageToSend);
+
+                  messages.push(message);
+
+                  routingTable = tablaEnrutamient(path, username, userJID, messages);
+
+                  // Guardando los datos en la tabla de enrutamiento.
                 }
               });
             
               rl.on('close', () => {
                 console.log('Chat finalizado.');
+  
+                console.log("Tabla de enrutamiento: ", routingTable);
                 mainMenu(); // Vuelve al menú principal después de completar la conversación
               });
             }
