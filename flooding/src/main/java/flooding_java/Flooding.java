@@ -19,9 +19,10 @@ public class Flooding {
         
         if(startNode == null){
             startNode = node;
+            System.out.println("Node messenger: " + node.getLabel() + " - " + node.getName());
         }
         else{
-            System.out.println("Node " + node.getLabel() + " received message: " + message);
+            System.out.println("Node " + node.getLabel() + " - " + node.getName() + " received message: " + message);
         }
 
         visited.put(node, true);
