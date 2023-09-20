@@ -218,11 +218,11 @@ async function login(username, password) {
 
             // Descomentar esto cuando sea el día de la presentación.
 
-            //const usernameAlm = username + "@alumchat.xyz" 
+            const usernameAlm = username + "@alumchat.xyz" 
 
-            const usernameAlm = "bar@alumchat.xyz";
+            //const usernameAlm = "bar@alumchat.xyz";
 
-            console.log("Username actual: ", usernameAlm);
+            //console.log("Username actual: ", usernameAlm);
 
             // Verificar si el nombre de usuario está en el JSON
             const keys = Object.keys(names.config);
@@ -271,7 +271,7 @@ async function login(username, password) {
                   console.log("Shortest path: ", shortestP);
 
                   // Chateando con el user.
-                  chatWithUser(userID, shortestP);
+                  chatWithUser(newI, shortestP);
 
                 })
 
@@ -289,6 +289,7 @@ async function login(username, password) {
             // });
             
             async function chatWithUser(userJID, path) {
+
               console.log(`Iniciando chat con: ${userJID}`);
 
               var routingTable = "";
