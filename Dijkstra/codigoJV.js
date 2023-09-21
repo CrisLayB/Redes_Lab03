@@ -139,7 +139,10 @@ async function login(username, password) {
           console.log(`${from}: ${body}`);
 
           // Imprimiendo los headers del mensaje.
-          console.log("Headers: ", stanza.attrs)
+          if (stanza.attrs) {
+            console.log("Headers: ", stanza.attrs)
+          }
+          //console.log("Headers: ", stanza.attrs)
           console.log("Payload: ", body);
 
           // Guardando el mensaje en la lista.
@@ -285,10 +288,10 @@ async function login(username, password) {
                   // Calcula su distancia más corta.
                   const shortestP = dijkstra(topo, claveIni, claveDest);
 
-                  console.log("Shortest path: ", shortestP);
+                  //console.log("Shortest path: ", shortestP);
 
                   // Chateando con el user.
-                  chatWithUser(newI, shortestP);
+                  chatWithUser(newI, shortestP, claveIni, claveDest);
 
                 })
 
@@ -305,7 +308,7 @@ async function login(username, password) {
             //   chatWithUser(newC);
             // });
             
-            async function chatWithUser(userJID, path) {
+            async function chatWithUser(userJID, path, claveIni, claveDest) {
 
               console.log(`Iniciando chat con: ${userJID}`);
 
@@ -412,13 +415,41 @@ async function login(username, password) {
                     hop_count: routing.hop_count,
                   };
 
+                  // Imprimiendo las llaves de los headers.
+                  // console.log("Clave ini: ", claveIni, " clave dest: ", claveDest);
+
+                  // Creando el mensaje como json en un string con el formato: {to: 'userJID', from: 'username', hop_count: 'hop_count', body: 'message'}
+                  const messag = JSON.stringify({
+                    type: 'message',
+                    headers: {
+                      to: claveDest,
+                      from: claveIni,
+                      hop_count: routing.hop_count,
+                    },
+                    payload: message,
+                  });
+
                   const messageToSend = xml(
                     'message',
                     headers,
-                    xml('body', {}, message)
+                    xml('body', {}, messag),
                   );
+
+                  //console.log("Message: ", messageToSend);
+
+                  console.log("Shortest path: ", path)
+
+                  // Imprimiendo el body del mensaje.
+                  // console.log("Body del mensaje: ", message);
+
                   
-                  console.log("Message: ", message)
+                  // // Enviando el mensaje al usuario destino
+                  // const messageToSend = xml(
+                  //   'message',
+                  //   { type: 'message', to: userJID }, // Usamos el JID del usuario destino
+                  //   xml('body', {}, routing),
+                  // );
+                  await xmpp.send(messageToSend);
 
                   //console.log("Message: ", messageToSend);
 

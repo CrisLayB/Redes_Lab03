@@ -106,8 +106,8 @@ async function login(username, password) {
 
       // }
 
-      // Verificar que sea un mensaje y que el tipo sea 'chat'
-      if (stanza.is('message')) {
+       // Verificar que sea un mensaje y que el tipo sea 'chat'
+       if (stanza.is('message')) {
         const from = stanza.attrs.from;
         const body = stanza.getChildText('body');
 
@@ -135,6 +135,10 @@ async function login(username, password) {
 
         } else {
           console.log(`${from}: ${body}`);
+
+          // Imprimiendo los headers del mensaje.
+          console.log("Headers: ", stanza.attrs)
+          console.log("Payload: ", body);
 
           // Guardando el mensaje en la lista.
           messages.push(body)
