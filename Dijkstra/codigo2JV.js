@@ -15,8 +15,8 @@ function showMenu() {
   console.log("1. Iniciar sesión");
   console.log("2. Salir");
 
-  const user = "val20159"
-  const pass = "170301M@rzo"
+  const user = "vel201011"
+  const pass = "1234"
 
 
   rl.question("Selecciona una opción: ", (answer) => {
@@ -69,7 +69,7 @@ async function login(username, password) {
 
     // Online.
     const presence = xml('presence', { type: 'available' });
-    xmpp.send(presence);
+    //xmpp.send(presence);
 
 
     // console.log("Inició sesión con este address: ", address)
@@ -91,8 +91,6 @@ async function login(username, password) {
     const gChat = [] // Lista para guardar las invitaciones a chats grupales.
 
     xmpp.on('stanza', (stanza) => {
-
-      //console.log("Stanza: ", stanza)
 
       // Imprimiendo las stanzas que se reciben.
       //console.log("Stanza recibida: ", stanza)
@@ -137,10 +135,6 @@ async function login(username, password) {
 
         } else {
           console.log(`${from}: ${body}`);
-
-          // Imprimiendo los headers del mensaje.
-          console.log("Headers: ", stanza.attrs)
-          console.log("Payload: ", body);
 
           // Guardando el mensaje en la lista.
           messages.push(body)
@@ -362,43 +356,6 @@ async function login(username, password) {
                   // Salir del chat al escribir "exit"
                   mainMenu();
                   rl.close();
-                } else if (message.trim() === 'archivo'){
-                  rl.question("Ingresa la ruta del archivo que deseas enviar: ", async (filePath) => {
-                    // Enviar el archivo al usuario
-                    await enviarArchivoBase64(userJID, filePath);
-                    
-                    
-                    // Función para convertir archivo a base64
-                    function fileToBase64(filePath) {
-                      const fs = require('fs');
-                      const fileData = fs.readFileSync(filePath);
-                      const base64Data = fileData.toString('base64');
-                      return base64Data;
-                    }
-
-                    // Función para enviar un archivo como mensaje en base64
-                    async function enviarArchivoBase64(contactJID, filePath) {
-                      // const newC = contactJID + '@alumchat.xyz';
-
-                      // Leer el archivo y convertirlo a base64
-                      const base64File = fileToBase64(filePath);
-                      const fileName = filePath.split('/').pop(); // Obtener el nombre del archivo desde la ruta
-
-                      // Crear el mensaje con el archivo en base64
-                      const message = xml(
-                        'message',
-                        { type: 'chat', to: contactJID },
-                        xml('body', {}, `file://${base64File}`),
-                        xml('subject', {}, `Archivo: ${fileName}`)
-                      );
-
-                      //console.log(message);
-
-                      // Enviar el mensaje al contacto
-                      await xmpp.send(message);
-                      //console.log('Archivo enviado con éxito. ' + message);
-                    }
-                  });
                 }
                 else {
 
@@ -415,15 +372,13 @@ async function login(username, password) {
                   const messageToSend = xml(
                     'message',
                     headers,
-                    xml('body', {}, message)
+                    xml('body', {}, message),
                   );
-                  
-                  console.log("Message: ", message)
 
                   //console.log("Message: ", messageToSend);
 
                   // Imprimiendo el body del mensaje.
-                  //console.log("Body del mensaje: ", messageToSend.getChildText('body'));
+                  console.log("Body del mensaje: ", message);
                   
                   // // Enviando el mensaje al usuario destino
                   // const messageToSend = xml(
@@ -431,7 +386,6 @@ async function login(username, password) {
                   //   { type: 'message', to: userJID }, // Usamos el JID del usuario destino
                   //   xml('body', {}, routing),
                   // );
-
                   await xmpp.send(messageToSend);
 
 

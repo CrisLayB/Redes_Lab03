@@ -4,11 +4,15 @@ import json
 def format_json_and_save(file_name):
     try:
         with open(file_name, 'r') as file:
-            # Lee el contenido del archivo y reemplaza comillas simples por comillas dobles
-            json_str = file.read().replace("'", '"')
+            # Lee el contenido del archivo
+            json_str = file.read()
 
-            # Cargar el JSON en un diccionario de Python
-            data = json.loads(json_str)
+            # Intenta cargar el JSON en un diccionario de Python
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError as e:
+                print(f"Error al cargar el archivo '{file_name}': {e}")
+                return
 
             # Formatear el JSON con comillas dobles e indentación
             formatted_json = json.dumps(data, indent=2)
