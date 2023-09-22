@@ -463,7 +463,7 @@ async function login(username, password) {
                   //   xml('body', {}, routing),
                   // );
 
-                  await xmpp.send(messageToSend);
+                  //await xmpp.send(messageToSend);
 
 
                   messages.push(message);
